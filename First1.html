@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Homework Tracker</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+  <h1 class="text-2xl font-bold mb-4">📚 Homework Tracker</h1>
+
+  <div class="mb-4">
+    <input id="subject" type="text" placeholder="Subject" class="border p-2 rounded mr-2">
+    <input id="task" type="text" placeholder="Homework" class="border p-2 rounded mr-2">
+    <input id="deadline" type="date" class="border p-2 rounded mr-2">
+    <button onclick="addHomework()" class="bg-blue-500 text-white px-4 py-2 rounded">Add</button>
+  </div>
+
+  <ul id="homeworkList" class="space-y-2"></ul>
+
+  <script>
+    let homework = JSON.parse(localStorage.getItem("homework")) || [];
+
+    function save() {
+      localStorage.setItem("homework", JSON.stringify(homework));
+      render();
+    }
+
+    function addHomework() {
+      const subject = document.getElementById("subject").value;
+      const task = document.getElementById("task").value;
+      const deadline = document.getElementById("deadline").value;
+      if (subject && task && deadline) {
+        homework.push({subject, task, deadline, done: false});
+        save();
+      }
+    }
+
+    function toggleDone(index) {
+      homework[index].done = !homework[index].done;
+      save();
+    }
+
+    function render() {
+      const list = document.getElementById("homeworkList");
+      list.innerHTML = "";
+      homework.forEach((h, i) => {
+        list.innerHTML += `
+          <li class="p-3 bg-white rounded shadow flex justify-between items-center">
+            <div>
+              <span class="${h.done ? 'line-through text-gray-500' : ''}">
+                <b>${h.subject}:</b> ${h.task} (Due: ${h.deadline})
+              </span>
+            </div>
+            <button onclick="toggleDone(${i})" class="bg-green-500 text-white px-3 py-1 rounded">
+              ${h.done ? 'Undo' : 'Done'}
+            </button>
+          </li>
+        `;
+      });
+    }
+
+    render();
+  </script>
+</body>
+</html>
